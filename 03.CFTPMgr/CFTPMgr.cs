@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Engine._03.CFRPMgr
+namespace Engine._03.CFTPMgr
 {
   public enum FUNC : int { ONE }
   public delegate object del_func(params object[] _arr_obj_sender);
@@ -39,8 +39,9 @@ namespace Engine._03.CFRPMgr
 
     public string server_path { get; set; }
     public string local_path { get; set; }
+
   }
-  public class CFTPMgr
+  public class CFTPMgr : IDisposable
   {
     #region DEFAULT (생성자/ 홀더/ INSTANCE / Destroy)       
     private CFTPMgr() { }
@@ -500,6 +501,11 @@ namespace Engine._03.CFRPMgr
       list_server_file_path.ForEach(element => list_thread.Add(new Thread(() => action(element))));
       list_thread.ForEach(element => element.Start());
       return true;
+    }
+
+    public void Dispose()
+    {
+      throw new NotImplementedException();
     }
 
 
