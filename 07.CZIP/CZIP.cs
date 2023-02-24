@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Engine._07.CZIP
 {
-  public class CZIP : GENERIC_MGR<CZIP>
-  {
-    private IEnumerable<TOutput> Zip<T1, T2, TOutput>(IEnumerable<T1> _iterable_first, IEnumerable<T2> _iterable_second, Func<T1, T2, TOutput> _generator)
+    public class CZIP : GENERIC_MGR<CZIP>
     {
-      using (var iter_first = _iterable_first.GetEnumerator())
-      using (var iter_second = _iterable_second.GetEnumerator())
-        while (iter_first.MoveNext() && iter_second.MoveNext())
-          yield return _generator(iter_first.Current, iter_second.Current);
+        private IEnumerable<TOutput> Zip<T1, T2, TOutput>(IEnumerable<T1> _iterable_first, IEnumerable<T2> _iterable_second, Func<T1, T2, TOutput> _generator)
+        {
+            using (var iter_first = _iterable_first.GetEnumerator())
+            using (var iter_second = _iterable_second.GetEnumerator())
+                while (iter_first.MoveNext() && iter_second.MoveNext())
+                    yield return _generator(iter_first.Current, iter_second.Current);
+        }
     }
-  }
 }
 /*
  private void test_1()
