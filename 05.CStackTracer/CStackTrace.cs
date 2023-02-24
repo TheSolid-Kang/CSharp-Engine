@@ -12,7 +12,7 @@ namespace Engine._05.CStackTracer
     const int DEFAULT_CAP = 2048;
     const int DEFAULT_FRAME_DEPTH = 2;
 
-    public void write_trace_info(string _note = "", int _depth = DEFAULT_FRAME_DEPTH)
+    public void WriteTraceInfo(string _note = "", int _depth = DEFAULT_FRAME_DEPTH)
     {
       string path = System.IO.Directory.GetCurrentDirectory() + @"\my_log_stack.txt";
       System.Text.StringBuilder str_buil = new System.Text.StringBuilder(DEFAULT_CAP);
