@@ -1,4 +1,5 @@
-﻿using MySqlX.XDevAPI.Common;
+﻿using Engine._05.CStackTracer;
+using MySqlX.XDevAPI.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -102,6 +103,7 @@ namespace Engine._01.DAO
       }
       catch (Exception _e)
       {
+        CStackTracer.GetInstance().WriteTraceInfo("DB GetDataTable 에러: " + _e.Message);
         System.Diagnostics.Debug.WriteLine($"예외 == {_e.Message}");
       }
       return null;
@@ -138,6 +140,7 @@ namespace Engine._01.DAO
       }
       catch (Exception _e)
       {
+        CStackTracer.GetInstance().WriteTraceInfo("DB Backup 에러: " + _e.Message);
         System.Diagnostics.Debug.WriteLine(_e.Message);
       }
     }
@@ -158,6 +161,7 @@ namespace Engine._01.DAO
       }
       catch (Exception _e)
       {
+        CStackTracer.GetInstance().WriteTraceInfo("DB Restore 에러: " + _e.Message);
         System.Diagnostics.Debug.WriteLine(_e.Message);
       }
 
