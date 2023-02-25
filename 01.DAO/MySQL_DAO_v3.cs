@@ -76,10 +76,6 @@ namespace Engine._01.DAO
         #endregion
 
         #region 멤버함수 정의부
-        private void _Execute(string _query)
-        {
-            _GetDataTable(_query);
-        }
         private MySql.Data.MySqlClient.MySqlConnection _ConnectDb() => new MySql.Data.MySqlClient.MySqlConnection(url);
         private MySql.Data.MySqlClient.MySqlCommand _SetCommand(string _query, MySql.Data.MySqlClient.MySqlConnection _connect) => new MySql.Data.MySqlClient.MySqlCommand(_query, _connect);
 
@@ -107,6 +103,29 @@ namespace Engine._01.DAO
                 System.Diagnostics.Debug.WriteLine($"예외 == {_e.Message}");
             }
             return null;
+        }
+        private void _Execute(string _query)
+        {
+            try
+            {
+                using (var connection = _ConnectDb())
+                using (var command = _SetCommand(_query, connection))
+                {
+                    connection.Open();
+                    if(1 != command.ExecuteNonQuery())
+                    {
+                        
+                    }
+
+                }
+            }
+            catch (Exception _e)
+            {
+                CStackTracer.GetInstance().WriteTraceInfo("DB GetDataTable 에러: " + _e.Message);
+                System.Diagnostics.Debug.WriteLine($"예외 == {_e.Message}");
+            }
+            _GetDataTable(_query);
+
         }
         bool _ExecuteMulQuery(List<string> _listQuery)
         {
