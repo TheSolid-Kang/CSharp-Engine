@@ -114,9 +114,8 @@ namespace Engine._01.DAO
                     connection.Open();
                     if(1 != command.ExecuteNonQuery())
                     {
-                        
+                        throw new Exception("Execute() 함수 버그");
                     }
-
                 }
             }
             catch (Exception _e)
