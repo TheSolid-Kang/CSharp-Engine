@@ -123,8 +123,6 @@ namespace Engine._01.DAO
                 CStackTracer.GetInstance().WriteTraceInfo("DB GetDataTable 에러: " + _e.Message);
                 System.Diagnostics.Debug.WriteLine($"예외 == {_e.Message}");
             }
-            _GetDataTable(_query);
-
         }
         bool _ExecuteMulQuery(List<string> _listQuery)
         {
@@ -187,10 +185,10 @@ namespace Engine._01.DAO
         #endregion
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             using (result as DataTable)
             {
                 ((DataTable)result)?.Dispose();
-                //GC.SuppressFinalize(true);
             }
             if (m_dataTable?.Rows.Count != 0)
             {
