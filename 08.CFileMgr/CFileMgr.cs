@@ -10,10 +10,10 @@ namespace Engine._08.CFileMgr
 {
     public class CFileMgr : GENERIC_MGR<CFileMgr>
     {
-        public List<string>? GetFileNames(string _path)
+        public List<string>? GetFileNames()
         {
             System.Text.StringBuilder string_builder_filter = new System.Text.StringBuilder(1024);
-            string_builder_filter.Append("Image Files(*.jpg; *.gif; *.bmp; *.png)|*.jpg;*.jpeg;*.gif;*.bmp;*.png");
+            string_builder_filter.Append("All Files(*.txt; *.md; *.jpg; *.gif; *.bmp; *.png)|*.txt;*.md;*.jpg;*.jpeg;*.gif;*.bmp;*.png");
             string_builder_filter.Append("|BMP 파일(*.bmp)|*.bmp|Jpg 파일(*.jpg)|*.jpg|PNG 파일(*.png)|*.png");
             string_builder_filter.Append("|GIF 파일(*.gif)|*.gif");
             string_builder_filter.Append("|txt 파일(*.txt)|*.txt");
