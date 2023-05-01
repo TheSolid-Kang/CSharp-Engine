@@ -39,7 +39,18 @@ namespace Engine._08.CFileMgr
         public IEnumerable<string> GetFileTextIter(string _path)
         {
             if (false == File.Exists(_path))
+            {
                 return null;
+            }
+
+            using (var fileStream = new FileStream(_path, FileMode.Open)) 
+            {
+                using(var binaryReader = new BinaryReader(fileStream))
+                {
+
+                }
+            }
+
             return System.IO.File.ReadLines(_path);
         }
         public string? GetFileText(string _path)
@@ -51,6 +62,23 @@ namespace Engine._08.CFileMgr
         public async void WriteTextFile(string _path, string _txt)
         {
             await File.WriteAllTextAsync(_path, _txt);
+        }
+        /// <summary>
+        /// 텍스트 파일 인코딩 구하기
+        /// https://icodebroker.tistory.com/4831
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public Encoding GetTextFileEncoding(string filePath)
+        {
+            using (StreamReader reader = new StreamReader(filePath, Encoding.Default, true))
+            {
+                reader.Peek();
+
+                Encoding encoding = reader.CurrentEncoding;
+
+                return encoding;
+            }
         }
         #endregion
     }
