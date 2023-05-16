@@ -94,5 +94,56 @@ namespace Engine._01.DAO
       return null;
     }
     
+    
+        public List<T> SelectList<T>(string query)
+        {
+            List<T> list = null;
+            string connectString = "Server=127.0.0.1;Database=TwoMites;Uid=root;Pwd=root;";
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    list = DataReaderMapToList<T>(dr);
+                    cmd.Dispose();
+                    dr.Close();
+                }
+            }
+            catch (Exception _e)
+            {
+                System.Diagnostics.Debug.WriteLine(_e.Message);
+            }
+
+            return list;
+        }
+
+        public List<T> DataReaderMapToList<T>(IDataReader dr)
+        {
+            List<T> list = new List<T>();
+            T obj = default(T);
+            try
+            {
+                while (dr.Read())
+                {
+                    obj = Activator.CreateInstance<T>();
+                    foreach (System.Reflection.PropertyInfo prop in obj.GetType().GetProperties())
+                    {
+                        if (!object.Equals(dr[prop.Name], DBNull.Value))
+                        {
+                            prop.SetValue(obj, dr[prop.Name], null);
+                        }
+                    }
+                    list.Add(obj);
+                }
+            }
+            catch(Exception _e)
+            {
+                System.Diagnostics.Debug.WriteLine(_e.Message);
+            }
+            return list;
+        }
+    
   }
 }
