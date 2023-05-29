@@ -1,6 +1,7 @@
 ﻿using Engine._05.CStackTracer;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -13,18 +14,10 @@ namespace Engine._01.DAO
     {
         public MSSQL_DAO()
         {
-            StringBuilder strBuil = new StringBuilder(1024);
-            strBuil.Append($"Data Source={DB_HOST},{DB_PORT};");//Data Source는 MSSQL 서버의 주소
-            strBuil.Append($"Initial Catalog={DB_NAME};");//Initial Catalog는 사용할 데이터베이스의 이름을 나타냅니다. 
-            strBuil.Append($"User ID={DB_USER};");
-            strBuil.Append($"Password={DB_PASS};");
-            strBuil.Append($"Integrated Security=True;");//Integrated Security=True는 Windows 인증을 사용하여 로그인하는 것을 의미합니다. 
-            strBuil.Append($"Connect Timeout=30;");//Connect Timeout은 연결 시도를 중단하고 예외를 발생시키기 전에 대기할 시간을 나타냅니다.
-            strBuil.Append($"Encrypt=False;");
-            strBuil.Append($"TrustServerCertificate=False;");
-            strBuil.Append($"ApplicationIntent=ReadWrite;");
-            strBuil.Append($"MultiSubnetFailover=False");
-            url = strBuil.ToString();//url 변수에는 연결할 MSSQL 데이터베이스의 정보가 포함되어 있습니다.
+            var ConnectionStrings = ConfigurationManager.ConnectionStrings;
+            string connectionString = ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString;//App.config에서 작성한 DB정보
+            var connection = ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString;
+            url = connection;
         }
 
 
@@ -127,10 +120,10 @@ namespace Engine._01.DAO
             {
                 while (dr.Read())
                 {
-                    obj = Activator.CreateInstance<T>();
+                    obj = System.Activator.CreateInstance<T>();
                     foreach (System.Reflection.PropertyInfo prop in obj.GetType().GetProperties())
                     {
-                        if (!object.Equals(dr[prop.Name], DBNull.Value))
+                        if (!object.Equals(dr[prop.Name], System.DBNull.Value))
                         {
                             prop.SetValue(obj, dr[prop.Name], null);
                         }
