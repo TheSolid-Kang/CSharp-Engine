@@ -14,10 +14,9 @@ namespace Engine._01.DAO
     {
         public MSSQL_DAO()
         {
-            var ConnectionStrings = ConfigurationManager.ConnectionStrings;
-            string connectionString = ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString;//App.config에서 작성한 DB정보
-            var connection = ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString;
-            url = connection;
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            Url = ConfigurationManager.ConnectionStrings["HomeDBConn"].ConnectionString;//App.config에서 작성한 DB정보
         }
 
 
@@ -25,76 +24,21 @@ namespace Engine._01.DAO
         {
             Dispose();
         }
-        private const string DB_HOST = "localhost";
-        private const string DB_PORT = "1433";
-        private const string DB_USER = "root";
-        private const string DB_PASS = "root";
-        private const string DB_NAME = "TwoMites";
-        private const string CHAR_SET = "UTF8";
+        public string Url { get; set; }
 
-        private string host;
-        private string port;
-        private string user;
-        private string pass;
-        private string name;
-
-        private string url;
-        public object result;
-        private DataTable _dataTable = null;
-        public DataTable m_dataTable
-        {
-            get
-            {
-                var dataTable = _dataTable;
-                return dataTable;
-            }
-            set
-            {
-                if (_dataTable != null)
-                    _dataTable.Dispose();
-                _dataTable = value;
-            }
-        }
         public void Dispose()
         {
 
         }
 
-        public DataTable GetDataTable(string _query) => _GetDataTable(_query);
-
-        private DataTable _GetDataTable(string _query)
-        {
-            try
-            {
-                using (var connection = new SqlConnection(url))
-                using (var command = new SqlCommand(_query, connection))
-                {
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Console.WriteLine("{0} {1}", reader.GetInt32(0), reader.GetString(1));
-                        }
-                    }
-                }
-            }
-            catch (Exception _e)
-            {
-                CStackTracer.GetInstance().WriteTraceInfo("DB GetDataTable 에러: " + _e.Message);
-                System.Diagnostics.Debug.WriteLine($"예외 == {_e.Message}");
-            }
-            return null;
-        }
 
 
         public List<T> SelectList<T>(string query)
         {
             List<T> list = null;
-            string connectString = "Server=127.0.0.1;Database=TwoMites;Uid=root;Pwd=root;";
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectString))
+                using (SqlConnection conn = new SqlConnection(Url))
                 {
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(query, conn);
@@ -115,9 +59,10 @@ namespace Engine._01.DAO
         public List<T> DataReaderMapToList<T>(IDataReader dr)
         {
             List<T> list = new List<T>();
-            T obj = default(T);
             try
             {
+                T obj = default(T);
+                list = new List<T>(dr.FieldCount);
                 while (dr.Read())
                 {
                     obj = System.Activator.CreateInstance<T>();
