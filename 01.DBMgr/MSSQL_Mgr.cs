@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine._01.DAO
+namespace Engine._01.DBMgr
 {
-    public class MSSQL_DAO : IDisposable
+    public class MSSQL_Mgr : IDisposable
     {
-        public MSSQL_DAO()
+        public MSSQL_Mgr()
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
@@ -20,7 +20,7 @@ namespace Engine._01.DAO
         }
 
 
-        ~MSSQL_DAO()
+        ~MSSQL_Mgr()
         {
             Dispose();
         }

@@ -7,21 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine._01.DAO
+namespace Engine._01.DBMgr
 {
     public enum EXECUTE_TYPE { GET_DATE_TABLE, EXEUCUTE }
-    public class MySQL_DAO_v3 : IDisposable
+    public class MySQL_Mgr : IDisposable
     {
-        public MySQL_DAO_v3()
+        public MySQL_Mgr()
           : this(DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME)
         { }
-        public MySQL_DAO_v3(string _name)
+        public MySQL_Mgr(string _name)
       : this(DB_HOST, DB_PORT, DB_USER, DB_PASS, _name)
         { }
-        public MySQL_DAO_v3(string _user, string _pass)
+        public MySQL_Mgr(string _user, string _pass)
           : this(DB_HOST, DB_PORT, _user, _pass, DB_NAME)
         { }
-        public MySQL_DAO_v3(string _host, string _port, string _user, string _pass, string _name)
+        public MySQL_Mgr(string _host, string _port, string _user, string _pass, string _name)
         {
             host = _host;
             port = _port;
@@ -31,7 +31,7 @@ namespace Engine._01.DAO
             url = $"DATA SOURCE={host}; PORT={port}; DATABASE={name}; UID={user}; PASSWORD={pass}; CharSet={CHAR_SET}; Allow User Variables=TRUE;";
         }
 
-        ~MySQL_DAO_v3()
+        ~MySQL_Mgr()
         {
             Dispose();
         }
