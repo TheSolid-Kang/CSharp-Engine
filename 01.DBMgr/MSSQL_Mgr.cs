@@ -12,33 +12,41 @@ namespace Engine._01.DBMgr
 {
     public class MSSQL_Mgr : IDisposable
     {
+        public enum DB_CONNECTION
+        {
+            HOME = 0
+                , ERP
+                , ERP_DEV
+                , MES1
+                , END
+        }
+
         public MSSQL_Mgr()
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-            Url = ConfigurationManager.ConnectionStrings["HomeDBConn"].ConnectionString;//App.config에서 작성한 DB정보
+            //Url = ConfigurationManager.ConnectionStrings["HomeDBConn"].ConnectionString;//App.config에서 작성한 DB정보
+            
         }
-
 
         ~MSSQL_Mgr()
         {
             Dispose();
         }
-        public string Url { get; set; }
 
         public void Dispose()
         {
 
         }
 
+       
 
-
-        public List<T> SelectList<T>(string query)
+        public List<T> SelectList<T>(DB_CONNECTION _CON, string query)
         {
+            string url = Enum.GetName(_CON);
             List<T> list = null;
             try
             {
-                using (SqlConnection conn = new SqlConnection(Url))
+                using (SqlConnection conn = new SqlConnection(url))
                 {
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(query, conn);
