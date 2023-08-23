@@ -42,7 +42,7 @@ namespace Engine._01.DBMgr
 
         public List<T> SelectList<T>(DB_CONNECTION _CON, string query)
         {
-            string url = Enum.GetName(_CON);
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
             List<T> list = null;
             try
             {
