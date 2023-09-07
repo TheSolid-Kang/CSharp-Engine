@@ -1,10 +1,12 @@
 ﻿using Engine._05.CStackTracer;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +20,7 @@ namespace Engine._01.DBMgr
                 , ERP
                 , ERP_DEV
                 , MES1
+                , MATERIAL
                 , END
         }
 
@@ -25,7 +28,7 @@ namespace Engine._01.DBMgr
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             //Url = ConfigurationManager.ConnectionStrings["HomeDBConn"].ConnectionString;//App.config에서 작성한 DB정보
-            
+
         }
 
         ~MSSQL_Mgr()
@@ -38,9 +41,26 @@ namespace Engine._01.DBMgr
 
         }
 
-       
+        public DataSet GetDataSet(DB_CONNECTION _CON, string _query)
+        {
+            DataSet ds = null;
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(url))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(_query, conn);
 
-        public List<T> SelectList<T>(DB_CONNECTION _CON, string query)
+                SqlDataAdapter sda = new SqlDataAdapter();
+                ds = new DataSet();
+                sda.SelectCommand = cmd;
+                sda.Fill(ds);
+                cmd.Dispose();
+            }
+            return ds;
+        }
+
+
+        public List<T> SelectList<T>(DB_CONNECTION _CON, string _query)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
             List<T> list = null;
@@ -49,7 +69,7 @@ namespace Engine._01.DBMgr
                 using (SqlConnection conn = new SqlConnection(url))
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlCommand cmd = new SqlCommand(_query, conn);
                     SqlDataReader dr = cmd.ExecuteReader();
                     list = DataReaderMapToList<T>(dr);
                     cmd.Dispose();
@@ -63,8 +83,7 @@ namespace Engine._01.DBMgr
 
             return list;
         }
-
-        public List<T> DataReaderMapToList<T>(IDataReader dr)
+        private List<T> DataReaderMapToList<T>(IDataReader dr)
         {
             List<T> list = new List<T>();
             try
