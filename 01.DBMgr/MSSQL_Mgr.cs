@@ -21,6 +21,7 @@ namespace Engine._01.DBMgr
                 , ERP_DEV
                 , MES1
                 , MATERIAL
+                , TWO_MITES
                 , END
         }
 
