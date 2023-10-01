@@ -22,6 +22,7 @@ namespace Engine._01.DBMgr
                 , MES1
                 , MATERIAL
                 , TWO_MITES
+                , CALEB
                 , END
         }
 
@@ -61,7 +62,7 @@ namespace Engine._01.DBMgr
         }
 
 
-        public List<T> SelectList<T>(DB_CONNECTION _CON, string _query)
+        public List<T> SelectList<T>(DB_CONNECTION _CON, string _query )
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
             List<T> list = null;
@@ -69,12 +70,14 @@ namespace Engine._01.DBMgr
             {
                 using (SqlConnection conn = new SqlConnection(url))
                 {
+                    
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(_query, conn);
                     SqlDataReader dr = cmd.ExecuteReader();
                     list = DataReaderMapToList<T>(dr);
                     cmd.Dispose();
                     dr.Close();
+
                 }
             }
             catch (Exception _e)
