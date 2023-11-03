@@ -23,6 +23,7 @@ namespace Engine._01.DBMgr
                 , MATERIAL
                 , TWO_MITES
                 , CALEB
+                , GW
                 , END
         }
 
@@ -60,7 +61,6 @@ namespace Engine._01.DBMgr
             }
             return ds;
         }
-
 
         public List<T> SelectList<T>(DB_CONNECTION _CON, string _query )
         {
