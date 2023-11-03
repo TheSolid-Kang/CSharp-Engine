@@ -36,8 +36,10 @@ namespace Engine._03.CFTPMgr
                 */
                 client.Connect();
                 if (false == client.IsConnected)
-
-                    client.ChangeDirectory(remoteDir);
+                {
+                    return;
+                }
+                client.ChangeDirectory(remoteDir);
                 DownloadDirectory(client, remoteDir, localDir);
                 client.Disconnect();
             }

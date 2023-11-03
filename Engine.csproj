@@ -24,7 +24,7 @@
 		</Reference>
 	</ItemGroup>
 	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-		<Copy SourceFiles="App.config" DestinationFiles="$(OutDir)\ASPMVC_Practice.dll.config" />
+		<Copy SourceFiles="App.config" DestinationFiles="$(OutDir)\BecomeCaleb_WEB.dll.config" />
 	</Target>
 
 </Project>
