@@ -16,6 +16,28 @@ namespace Engine._03.CFTPMgr
 {
     public class CSFTPMgr
     {
+        private static string _ip = "192.168.211.9";
+        private static int _port = 22;
+        private static string _id = "root";
+        private static string _pwd = "yonwoo*0619!@";
+
+        public static IEnumerable<ISftpFile> GetSftpFiles(string _remoteDirPath)
+        {
+            var client = CSFTPMgr.GetSftpClient;
+            client.Connect();
+            client.ChangeDirectory(_remoteDirPath);
+            if (false == client.IsConnected)
+                return null;
+
+            var iterable = client.ListDirectory(_remoteDirPath);
+
+            client.Disconnect();
+            client.Dispose();
+            return iterable;
+        }
+
+        private static SftpClient GetSftpClient => new SftpClient(_ip, _port, _id, _pwd);
+
         /// <summary>
         /// 
         /// </summary>
@@ -26,25 +48,19 @@ namespace Engine._03.CFTPMgr
             var localDir = localPath;
             var remoteDir = remotePath;
 
-            var files = new List<String>();
-            using (SftpClient client = new SftpClient("192.168.211.9", 22, "root", "yonwoo*0619!@"))
+            using (SftpClient client = new SftpClient(_ip, _port, _id, _pwd))
             {
-                /*
-                client.KeepAliveInterval = TimeSpan.FromSeconds(60);
-                client.ConnectionInfo.Timeout = TimeSpan.FromMinutes(180);
-                client.OperationTimeout = TimeSpan.FromMinutes(180);
-                */
                 client.Connect();
+                client.ChangeDirectory(remoteDir);
                 if (false == client.IsConnected)
                 {
                     return;
                 }
-                client.ChangeDirectory(remoteDir);
                 DownloadDirectory(client, remoteDir, localDir);
                 client.Disconnect();
             }
-
         }
+
 
         public static void DownloadDirectory(SftpClient client, string remotePath, string localPath)
         {
@@ -78,34 +94,50 @@ namespace Engine._03.CFTPMgr
                 System.Diagnostics.Debug.WriteLine(_e.Message);
             }
         }
-        public static void UploadDirectory(SftpClient client, string localPath, string remotePath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="remotePath">리눅스 서버 경로</param>
+        /// <param name="localPath">저장 할 윈도우 서버 경로</param>
+        public static void DownloadFiles(string remotePath, string localPath, Dictionary<string, ISftpFile> keyValuePairs)
         {
-            Console.WriteLine("Uploading directory {0} to {1}", localPath, remotePath);
+            var localDir = localPath;
+            var remoteDir = remotePath;
 
-            IEnumerable<FileSystemInfo> infos =
-                new DirectoryInfo(localPath).EnumerateFileSystemInfos();
+            using (SftpClient client = new SftpClient(_ip, _port, _id, _pwd))
+            {
+                client.Connect();
+                client.ChangeDirectory(remoteDir);
+                if (false == client.IsConnected)
+                {
+                    return;
+                }
+                DownloadDirectory(client, remoteDir, localDir);
+                client.Disconnect();
+            }
+        }
+        public static void DownloadDirectory(SftpClient client, string remotePath, string localPath, Dictionary<string, ISftpFile> keyValuePairs)
+        {
+            Directory.CreateDirectory(localPath);
+
             try
             {
-                foreach (FileSystemInfo info in infos)
+                foreach (SftpFile file in keyValuePairs.Values)
                 {
-                    if (info.Attributes.HasFlag(FileAttributes.Directory))
+                    if ((file.Name != ".") && (file.Name != ".."))
                     {
-                        string subPath = remotePath + "/" + info.Name;
-                        if (!client.Exists(subPath))
+                        string sourceFilePath = remotePath + "/" + file.Name;
+                        string destFilePath = Path.Combine(localPath, file.Name);
+                        if (file.IsDirectory)
                         {
-                            client.CreateDirectory(subPath);
+                            DownloadDirectory(client, sourceFilePath, destFilePath, keyValuePairs);
                         }
-                        UploadDirectory(client, info.FullName, remotePath + "/" + info.Name);
-                    }
-                    else
-                    {
-                        using (Stream fileStream = new FileStream(info.FullName, FileMode.Open))
+                        else
                         {
-                            Console.WriteLine(
-                                "Uploading {0} ({1:N0} bytes)",
-                                info.FullName, ((FileInfo)info).Length);
-
-                            client.UploadFile(fileStream, remotePath + "/" + info.Name);
+                            using (Stream fileStream = File.Create(destFilePath))
+                            {
+                                client.DownloadFile(sourceFilePath, fileStream);
+                            }
                         }
                     }
                 }
@@ -115,6 +147,9 @@ namespace Engine._03.CFTPMgr
                 Console.WriteLine(_e.Message);
                 System.Diagnostics.Debug.WriteLine(_e.Message);
             }
+
         }
+
+
     }
 }
