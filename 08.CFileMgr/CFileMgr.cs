@@ -34,6 +34,27 @@ namespace Engine._08.CFileMgr
             }
             return null;
         }
+        public List<string>? GetFileNames(string _rootPath)
+        {
+            var directoryInfo = new DirectoryInfo(_rootPath);
+            var list = directoryInfo.GetFiles().ToList();
+            List<string> fileNames = new List<string>(list.Count);
+            list.ForEach(file => { fileNames.Add(file.FullName); });
+            return fileNames;
+        }
+        public List<string>? GetRecursiveFileNames(string _rootDirPath)
+        {
+            var directories = Directory.EnumerateDirectories(_rootDirPath, "*.*", SearchOption.AllDirectories).ToList();
+            List<string> dirPaths = new List<string>();
+            foreach (var _dir in directories)
+            {
+                DirectoryInfo _dirInfo = new DirectoryInfo(_dir);
+                var files = _dirInfo.GetFiles().ToList();
+                if (files.Count != 0)
+                    dirPaths.Add(_dir); //파일을 가지고 있는 디렉토리만 추가
+            }
+            return dirPaths;
+        }
 
         #region txt, md 파일 관련
         public IEnumerable<string> GetFileTextIter(string _path)
@@ -43,9 +64,9 @@ namespace Engine._08.CFileMgr
                 return null;
             }
 
-            using (var fileStream = new FileStream(_path, FileMode.Open)) 
+            using (var fileStream = new FileStream(_path, FileMode.Open))
             {
-                using(var binaryReader = new BinaryReader(fileStream))
+                using (var binaryReader = new BinaryReader(fileStream))
                 {
 
                 }
