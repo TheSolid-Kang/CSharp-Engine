@@ -32,7 +32,7 @@ namespace Engine._09.Crypto
         /// <param name="plainText">암호화 하려는 평문</param>
         /// <param name="cipherKey">암호화할 때 사용하는 비밀키, 암/복호화 할 때 사용</param>
         /// <returns>암호화 된 데이터</returns>
-        internal string EncryptString(string plainText, string cipherKey)
+        public static string EncryptString(string plainText, string cipherKey)
         {
             // class 선언, 초기화
             RijndaelManaged RijndaelCipher = new RijndaelManaged();
@@ -80,7 +80,7 @@ namespace Engine._09.Crypto
         /// <param name="encryptData">복호화 하려는 키</param>
         /// <param name="cipherKey">암호화 할 때 사용한 패스워드</param>
         /// <returns>복호화 된 데이터</returns>
-        internal string DecryptString(string encryptData, string cipherKey)
+        public static string DecryptString(string encryptData, string cipherKey)
         {
             RijndaelManaged RijndaelCipher = new RijndaelManaged();
 
