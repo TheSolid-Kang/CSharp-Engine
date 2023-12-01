@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Engine._01.DBMgr
 {
     public enum EXECUTE_TYPE { GET_DATE_TABLE, EXEUCUTE }
-    public class MySQL_Mgr : IDisposable
+    public class MySQL_Mgr : DbMgr, IDisposable
     {
         public MySQL_Mgr()
           : this(DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME)
