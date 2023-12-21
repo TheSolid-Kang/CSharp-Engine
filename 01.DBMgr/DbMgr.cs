@@ -21,26 +21,23 @@ namespace Engine._01.DBMgr
             , TWO_MITES
             , CALEB
             , GW
+            , YWDEV
             , END
         }
 
-
-        public List<T> SelectList<T>(DB_CONNECTION _CON, string _query)
+        public List<T> SelectList<T>(string _url, string _query)
         {
-            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
             List<T> list = null;
             try
             {
-                using (SqlConnection conn = new SqlConnection(url))
+                using (SqlConnection conn = new SqlConnection(_url))
                 {
-
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(_query, conn);
                     SqlDataReader dr = cmd.ExecuteReader();
                     list = DataReaderMapToList<T>(dr);
                     cmd.Dispose();
                     dr.Close();
-
                 }
             }
             catch (Exception _e)
@@ -50,6 +47,14 @@ namespace Engine._01.DBMgr
 
             return list;
         }
+
+        public List<T> SelectList<T>(DB_CONNECTION _CON, string _query)
+        {
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
+            return SelectList<T>(url, _query);
+        }
+
+
         private List<T> DataReaderMapToList<T>(IDataReader dr)
         {
             List<T> list = new List<T>();
@@ -76,6 +81,5 @@ namespace Engine._01.DBMgr
             }
             return list;
         }
-
     }
 }
