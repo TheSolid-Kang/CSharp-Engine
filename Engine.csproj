@@ -23,8 +23,8 @@
 			<HintPath>packages\6.0.13\System.Windows.Forms.dll</HintPath>
 		</Reference>
 	</ItemGroup>
-	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-		<Copy SourceFiles="App.config" DestinationFiles="$(OutDir)\BecomeCaleb_WEB.dll.config" />
+	<Target Name="CopyCustomContent" AfterTargets="BeforeBuild">
+		<Copy SourceFiles="App.config" DestinationFiles="$(OutDir)\$(SolutionName).dll.config" />
 	</Target>
 
 </Project>
