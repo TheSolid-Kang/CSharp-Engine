@@ -1,14 +1,47 @@
 ﻿using Engine._98.Headers;
 using System.DirectoryServices;
+using System.Reflection.PortableExecutable;
+using DirectoryEntry = System.DirectoryServices.DirectoryEntry;
 
 namespace Engine._10.CActiveDirectoryMgr
 {
     public class CActiveDirectoryMgr : GENERIC_MGR<CActiveDirectoryMgr>
     {
+        /*
+            CN      commonName
+            L       localityName
+            ST      stateOrProvinceName
+            O       organizationName
+            OU      organizationalUnitName
+            C       countryName
+            STREET  streetAddress
+            DC      domainComponent
+            UID     userid
+         */
         public string GetCurrentDomainPath()
         {
+            //CN=김동혁(DONGHYEOK KIM),OU=HR계정,OU=Users,OU=_Yonwoo,DC=adtest,DC=com
+            //adtest.com/_Yonwoo/Users/HR계정
+
+
             //DirectoryEntry de = new DirectoryEntry("LDAP://adtest.com");
-            DirectoryEntry de = new DirectoryEntry("LDAP://adtest.com", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://adtest.com:3389");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://adtest.com", "administrator", "yonwoo*211013");
+
+            //DirectoryEntry de = new DirectoryEntry("LDAP://CN=Person,CN=Schema,CN=Configuration,DC=adtest,DC=com/Users");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://adtest.com/_Yonwoo/Users/HR계정/");
+
+            DirectoryEntry de = new DirectoryEntry("LDAP://10.225.88.70", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://10.225.88.70:3389");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://10.225.88.70:3389", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://[10.225.88.70]:[3389]");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://[10.225.88.70]:[3389]", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://[10.225.88.70]:[3389]", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://10.225.88.70:3389.com", "administrator", "yonwoo*211013");
+            //DirectoryEntry de = new DirectoryEntry("LDAP://[10.225.88.70]:[3389].com", "administrator", "yonwoo*211013");
+            var temp = de.Children;
+            DirectorySearcher search = new DirectorySearcher(de);
+
 
             return "LDAP://" + de.Properties["defaultNamingContext"][0].ToString();
         }
