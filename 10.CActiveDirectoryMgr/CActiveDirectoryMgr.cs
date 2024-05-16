@@ -53,44 +53,53 @@ namespace Engine._10.CActiveDirectoryMgr
 
             return "LDAP://" + directoryEntry.Properties["defaultNamingContext"][0].ToString();
         }
+
         public List<Users> GetADUsers()
         {
-            List<Users> lstADUsers = new List<Users>();
+            DirectoryEntry directoryEntry = new DirectoryEntry("LDAP://10.225.88.70", "administrator", "yonwoo*211013");
+            DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry)
+            {
+                SearchScope = SearchScope.Subtree,
+                Filter = $"(&(objectCategory=person)(objectClass=user))"
+            };
+            return GetADObjs<Users>(directoryEntry, directorySearcher);
+        }
+        /// <summary>
+        /// AD 객체(User, Group)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private List<T> GetADObjs<T>(DirectoryEntry _directoryEntry, DirectorySearcher _directorySearcher)
+        {
+            List<T> list = new List<T>();
+
             try
             {
-                DirectoryEntry searchRoot = new DirectoryEntry("LDAP://10.225.88.70", "administrator", "yonwoo*211013");  //서버도메인 정보, 서버의 계정ID, 계정 PW               
-                DirectorySearcher directorySearcher = new DirectorySearcher(searchRoot);
-                directorySearcher.Filter = $"(&(objectCategory=person)(objectClass=user))";
-                string text = "sAMAccountName"; //ID를 가져오겠다는 뜻이다.                     
-                //directorySearcher.PropertiesToLoad.Add("cn");               
-                directorySearcher.PropertiesToLoad.Add(text);
-                directorySearcher.PropertiesToLoad.Add("mail"); //mail을 가져오겠다는 뜻이다.               
-                directorySearcher.PropertiesToLoad.Add("usergroup"); //usergroup을 가져오겠다는 뜻이다.               
-                directorySearcher.PropertiesToLoad.Add("displayname"); //표기이름을 가져오겠다는 뜻이다.               
-                SearchResultCollection resultCol = directorySearcher.FindAll();
-                SearchResult result; 
-                if (resultCol != null)
-                {
-                    for (int counter = 0; counter < resultCol.Count; counter++)
-                    {
-                        string UserNameEmailString = string.Empty;
-                        result = resultCol[counter];
-                        if (result.Properties.Contains("samaccountname"))
-                        {
-                            Users objSurveyUsers = new Users();
-                            if (result.Properties["samaccountname"] != null)
-                                objSurveyUsers.sAMAccountName = (String)result.Properties["samaccountname"][0];
-                            lstADUsers.Add(objSurveyUsers);
-                        }
-                    }
-                }
+                //AD User 가져오기
+                T obj = default(T);
+                obj = System.Activator.CreateInstance<T>();
+                foreach (System.Reflection.PropertyInfo prop in obj.GetType().GetProperties())
+                    _directorySearcher.PropertiesToLoad.Add(prop.Name);
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine("## Get Search AD User List Exception : " + ex.Message);
+                System.Console.WriteLine("## Get Search AD List Exception : " + ex.Message);
             }
 
-            return lstADUsers;
+            SearchResultCollection resultCollection = _directorySearcher.FindAll();
+            list = new List<T>(resultCollection.Count);
+            foreach (SearchResult searchResult in resultCollection)
+            {
+                T obj = System.Activator.CreateInstance<T>();
+                foreach (System.Reflection.PropertyInfo prop in obj.GetType().GetProperties())
+                {
+                    if(true == searchResult.Properties.Contains(prop.Name))
+                        prop.SetValue(obj, searchResult.Properties[prop.Name][0]);
+                }
+                list.Add(obj);
+            }
+
+            return list;
         }
 
         void AccessADEntryTest()
