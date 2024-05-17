@@ -71,7 +71,9 @@ namespace Engine._10.CActiveDirectoryMgr
                 {
                     if (true == searchResult.Properties.Contains(prop.Name))
                     {
-                        if(prop.Name.Equals("lastLogon") || prop.Name.Equals("lastLogonTimestamp") || prop.Name.Equals("pwdLastSet"))
+                        if(prop.Name.Equals("lastLogon") 
+                            || prop.Name.Equals("lastLogonTimestamp") 
+                            || prop.Name.Equals("pwdLastSet"))
                             prop.SetValue(obj, DateTime.FromFileTime((System.Int64)searchResult.Properties[prop.Name][0]));
                         else
                             prop.SetValue(obj, searchResult.Properties[prop.Name][0]);
