@@ -53,11 +53,11 @@ namespace Engine._01.DBMgr
         public DataTable GetDataTable(DB_CONNECTION _CON, string _query)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
-            return GetSPDataTable(url, _query);
+            return GetDataTable(url, _query);
         }
         public DataTable GetDataTable(string _url, string _query)
         {
-            DataTable dt = null;
+            DataTable dt = new DataTable();
             using (SqlConnection conn = new SqlConnection(_url))
             {
                 using (SqlCommand cmd = new SqlCommand(_query, conn))
@@ -75,14 +75,14 @@ namespace Engine._01.DBMgr
             return dt;
         }
 
-        public DataTable GetSPDataTable(DB_CONNECTION _CON, string _query) 
+        public DataTable GetSPDataTable(DB_CONNECTION _CON, string _query)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
             return GetSPDataTable(url, _query);
         }
-        public DataTable GetSPDataTable(string _url, string _query) 
+        public DataTable GetSPDataTable(string _url, string _query)
         {
-            DataTable dt = null;
+            DataTable dt = new DataTable();
             DataSet ds = new DataSet();
             using (SqlConnection conn = new SqlConnection(_url))
             {
@@ -90,15 +90,16 @@ namespace Engine._01.DBMgr
                 {
                     conn.Open();
                     cmd.CommandType = CommandType.StoredProcedure;
-                    try { 
-                    using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
+                    try
                     {
-                        sqlDataAdapter.Fill(ds);
-                        //cmd.ex
-                        System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
+                        using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
+                        {
+                            sqlDataAdapter.Fill(ds);
+                            //cmd.ex
+                            System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
+                        }
                     }
-                    }
-                    catch(Exception _e)
+                    catch (Exception _e)
                     {
                         System.Diagnostics.Debug.WriteLine(_e.Message);
                     }
