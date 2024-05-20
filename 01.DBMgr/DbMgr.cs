@@ -23,6 +23,7 @@ namespace Engine._01.DBMgr
             , GW
             , YW
             , YWDEV
+            , YQMS
             , END
         }
 

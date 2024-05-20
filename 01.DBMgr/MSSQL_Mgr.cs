@@ -65,7 +65,7 @@ namespace Engine._01.DBMgr
                     conn.Open();
                     using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
                     {
-                        if (0 <= sqlDataAdapter.Fill(dt))
+                        if (0 >= sqlDataAdapter.Fill(dt))
                         {
                             System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
                         }
@@ -94,9 +94,12 @@ namespace Engine._01.DBMgr
                     {
                         using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
                         {
-                            sqlDataAdapter.Fill(ds);
+                            //sqlDataAdapter.Fill(ds); //240520 wip: ?? 왜 ds에 값을 채우지?
                             //cmd.ex
-                            System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
+                            if (0 >= sqlDataAdapter.Fill(dt))
+                            {
+                                System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
+                            }
                         }
                     }
                     catch (Exception _e)
