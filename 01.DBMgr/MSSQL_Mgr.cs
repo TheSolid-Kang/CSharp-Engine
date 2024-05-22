@@ -32,6 +32,7 @@ namespace Engine._01.DBMgr
 
         }
 
+        #region SELECT 
         public DataSet GetDataSet(DB_CONNECTION _CON, string _query)
         {
             DataSet ds = null;
@@ -110,5 +111,61 @@ namespace Engine._01.DBMgr
             }
             return dt;
         }
+        #endregion
+
+        #region INSERT
+        public void InsertData<T>(DB_CONNECTION _CON, T data)
+        {
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
+            InsertData(url, data);
+        }
+        public void InsertData<T>(string _connectionUrl, T data)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionUrl))
+            {
+                connection.Open();
+
+                // 제네릭 INSERT 메서드 호출
+                InsertData(connection, data);
+            }
+        }
+        public void InsertData<T>(SqlConnection connection, T data)
+        {
+            // 데이터 모델 클래스의 속성 정보 가져오기
+            var properties = typeof(T).GetProperties();
+
+            // INSERT 쿼리 생성
+            string query = $"INSERT INTO {typeof(T).Name} ({string.Join(", ", properties.Select(p => p.Name))}) VALUES ({string.Join(", ", properties.Select(p => $"@{p.Name}"))})";
+            //string query = $"INSERT INTO yw_TADUsers_IF ({string.Join(", ", properties.Select(p => p.Name))}) VALUES ({string.Join(", ", properties.Select(p => $"@{p.Name}"))})";
+
+            // SQL 커맨드 객체 생성 및 파라미터 바인딩
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(DateTime))
+                    {
+                        DateTime dateTime = (DateTime)property.GetValue(data);
+                        if(dateTime.Year > 1753)
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", dateTime);
+                        }
+                        else
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", "");//'1900-01-01 00:00:00.000' 으로 들어감.
+                        }
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(data));
+                    }
+                }
+
+                // 쿼리 실행
+                command.ExecuteNonQuery();
+            }
+        }
+        #endregion
+
     }
 }

@@ -20,16 +20,10 @@ namespace Engine._10.CActiveDirectoryMgr
         //public string name { get; set; } = ""; //이름 전체
         public string otherHomePhone { get; set; } = ""; //기타 내선번호
         public string otherMobile { get; set; } = ""; //기타 휴대폰번호
-        public Byte[] objectGUID { get; set; } //사용자 객체 키값
-        public Byte[] objectSid { get; set; } //
-        public string strobjectGUID 
-        { 
-            get 
-            {
-                //Encoding.Unicode.GetString(objectGUID);
-                return BitConverter.ToString(objectGUID);  
-            } 
-        } //사용자 객체 키값
+        //public Byte[] objectGUID { get; set; } //사용자 객체 키값
+        //Encoding.Unicode.GetString(objectGUID);
+        //public string strobjectGUID { get { return BitConverter.ToString(objectGUID); } } //사용자 객체 키값
+        //public Byte[] objectSid { get; set; } //
         //public string strobjectSid { get; } //
         //public int primaryGroupID { get; set; }
         public DateTime pwdLastSet { get; set; }
