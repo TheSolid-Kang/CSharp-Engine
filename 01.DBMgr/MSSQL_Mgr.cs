@@ -76,27 +76,25 @@ namespace Engine._01.DBMgr
             return dt;
         }
 
-        public DataTable GetSPDataTable(DB_CONNECTION _CON, string _query)
+        public DataTable GetSPDataTable(DB_CONNECTION _CON, string _storedProcedure, SqlParameter[] _sqlParameters)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
-            return GetSPDataTable(url, _query);
+            return GetSPDataTable(url, _storedProcedure, _sqlParameters);
         }
-        public DataTable GetSPDataTable(string _url, string _query)
+        public DataTable GetSPDataTable(string _url, string _storedProcedure, SqlParameter[] _sqlParameters)
         {
             DataTable dt = new DataTable();
-            DataSet ds = new DataSet();
             using (SqlConnection conn = new SqlConnection(_url))
             {
-                using (SqlCommand cmd = new SqlCommand(_query, conn))
+                using (SqlCommand cmd = new SqlCommand(_storedProcedure, conn))
                 {
+                    cmd.Parameters.AddRange(_sqlParameters);
                     conn.Open();
                     cmd.CommandType = CommandType.StoredProcedure;
                     try
                     {
                         using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
                         {
-                            //sqlDataAdapter.Fill(ds); //240520 wip: ?? 왜 ds에 값을 채우지?
-                            //cmd.ex
                             if (0 >= sqlDataAdapter.Fill(dt))
                             {
                                 System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
@@ -110,6 +108,40 @@ namespace Engine._01.DBMgr
                 }
             }
             return dt;
+        }
+
+        public DataSet GetSPDataSet(DB_CONNECTION _CON, string _storedProcedure, SqlParameter[] _sqlParameters)
+        {
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
+            return GetSPDataSet(url, _storedProcedure, _sqlParameters);
+        }
+        public DataSet GetSPDataSet(string _url, string _storedProcedure, SqlParameter[] _sqlParameters)
+        {
+            DataSet ds = new DataSet();
+            using (SqlConnection conn = new SqlConnection(_url))
+            {
+                using (SqlCommand cmd = new SqlCommand(_storedProcedure, conn))
+                {
+                    cmd.Parameters.AddRange(_sqlParameters);
+                    conn.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    try
+                    {
+                        using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd))
+                        {
+                            if (0 >= sqlDataAdapter.Fill(ds))
+                            {
+                                System.Diagnostics.Debug.WriteLine("DataTable에 데이터가 없습니다.");
+                            }
+                        }
+                    }
+                    catch (Exception _e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(_e.Message);
+                    }
+                }
+            }
+            return ds;
         }
         #endregion
 
@@ -166,6 +198,5 @@ namespace Engine._01.DBMgr
             }
         }
         #endregion
-
     }
 }
