@@ -1,7 +1,10 @@
 ﻿using Engine._98.Headers;
 using Org.BouncyCastle.Bcpg;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.DirectoryServices;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using DirectoryEntry = System.DirectoryServices.DirectoryEntry;
 
@@ -85,5 +88,45 @@ namespace Engine._10.CActiveDirectoryMgr
             return list;
         }
 
+
+        public DataTable GetDataTable<T>(string? _ldapUrl, string? _username, string? _password)
+        {
+            DirectoryEntry directoryEntry = new DirectoryEntry(_ldapUrl, _username, _password);
+            DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry)
+            {
+                SearchScope = SearchScope.Subtree,
+                Filter = $"(&(objectCategory=person)(objectClass=user))"
+            };
+            return GetDataTable<Users>(directoryEntry, directorySearcher);
+        }
+        public DataTable GetDataTable<T>(DirectoryEntry _directoryEntry, DirectorySearcher _directorySearcher)
+        {
+            var list = GetADObjs<T>(_directoryEntry, _directorySearcher);
+            return ToDataTable(list);
+        }
+        public DataTable ToDataTable<T>(List<T>? items)
+        {
+            var tb = new DataTable(typeof(T).Name);
+
+            PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var prop in props)
+            {
+                tb.Columns.Add(prop.Name, prop.PropertyType);
+            }
+
+            foreach (var item in items)
+            {
+                var values = new object[props.Length];
+                for (var i = 0; i < props.Length; i++)
+                {
+                    values[i] = props[i].GetValue(item, null);
+                }
+
+                tb.Rows.Add(values);
+            }
+
+            return tb;
+        }
     }
 }
