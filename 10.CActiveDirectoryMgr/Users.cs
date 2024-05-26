@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Engine._10.CActiveDirectoryMgr
         public string title { get; set; } = ""; //직급
         public string mail { get; set; } = "";
         public string manager { get; set; } = ""; //관리자
+        [Key]
         public string sAMAccountName { get; set; } = "";
         //public string userGroup { get; set; } = "";
         public string userPrincipalName { get; set; } = ""; //yonwoo.cos / yonwookorea.com 구분
