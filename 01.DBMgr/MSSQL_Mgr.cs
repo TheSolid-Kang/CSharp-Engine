@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -194,8 +195,15 @@ namespace Engine._01.DBMgr
                     }
                 }
 
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception _e)
+                {
+                    Debug.WriteLine(_e.Message);
+                }
                 // 쿼리 실행
-                command.ExecuteNonQuery();
             }
         }
 
@@ -271,7 +279,14 @@ namespace Engine._01.DBMgr
                 }
 
                 // 쿼리 실행
-                command.ExecuteNonQuery();
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception _e)
+                {
+                    Debug.WriteLine(_e.Message);
+                }
             }
         }
 
@@ -322,7 +337,6 @@ namespace Engine._01.DBMgr
             }
         }
 
-
         public void DeleteDataByKey<T>(DB_CONNECTION _CON, object key)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
@@ -338,7 +352,6 @@ namespace Engine._01.DBMgr
                 DeleteDataByKey<T>(connection, key);
             }
         }
-
         public void DeleteDataByKey<T>(SqlConnection connection, object key)
         {
             // 데이터 모델 클래스의 속성 정보 가져오기
@@ -364,6 +377,7 @@ namespace Engine._01.DBMgr
                 throw new Exception("No key property found in the data model class.");
             }
         }
+
         #endregion
         #region UPDATE
         public void UpdateDataByKey<T>(DB_CONNECTION _CON, object key, Dictionary<string, object> updatedValues)

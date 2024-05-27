@@ -28,7 +28,7 @@ namespace Engine._10.CActiveDirectoryMgr
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<Users> GetADUsers(string? _ldapUrl, string? _username, string? _password)
+        public List<ADUser> GetADUsers(string? _ldapUrl, string? _username, string? _password)
         {
             DirectoryEntry directoryEntry = new DirectoryEntry(_ldapUrl, _username, _password);
             DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry)
@@ -36,9 +36,9 @@ namespace Engine._10.CActiveDirectoryMgr
                 SearchScope = SearchScope.Subtree,
                 Filter = $"(&(objectCategory=person)(objectClass=user))"
             };
-            return GetADObjs<Users>(directoryEntry, directorySearcher);
+            return GetADObjs<ADUser>(directoryEntry, directorySearcher);
         }
-        public List<Users> GetADUsers()
+        public List<ADUser> GetADUsers()
         {
             return GetADUsers("LDAP://10.225.88.70", "administrator", "yonwoo*211013");
         }
@@ -97,7 +97,7 @@ namespace Engine._10.CActiveDirectoryMgr
                 SearchScope = SearchScope.Subtree,
                 Filter = $"(&(objectCategory=person)(objectClass=user))"
             };
-            return GetDataTable<Users>(directoryEntry, directorySearcher);
+            return GetDataTable<ADUser>(directoryEntry, directorySearcher);
         }
         public DataTable GetDataTable<T>(DirectoryEntry _directoryEntry, DirectorySearcher _directorySearcher)
         {

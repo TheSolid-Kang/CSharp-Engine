@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Engine._10.CActiveDirectoryMgr
 {
-    public class Users
+    public class ADUser
     {
         public string cn { get; set; } = "";
         public string description { get; set; } = "";
