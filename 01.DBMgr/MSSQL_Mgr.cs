@@ -173,7 +173,6 @@ namespace Engine._01.DBMgr
 
             // INSERT 쿼리 생성
             string query = $"INSERT INTO {typeof(T).Name} ({string.Join(", ", properties.Select(p => p.Name))}) VALUES ({string.Join(", ", properties.Select(p => $"@{p.Name}"))})";
-            //string query = $"INSERT INTO yw_TADUsers_IF ({string.Join(", ", properties.Select(p => p.Name))}) VALUES ({string.Join(", ", properties.Select(p => $"@{p.Name}"))})";
 
             // SQL 커맨드 객체 생성 및 파라미터 바인딩
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -184,13 +183,9 @@ namespace Engine._01.DBMgr
                     {
                         DateTime dateTime = (DateTime)property.GetValue(data);
                         if (dateTime.Year > 1753)
-                        {
                             command.Parameters.AddWithValue($"@{property.Name}", dateTime);
-                        }
                         else
-                        {
                             command.Parameters.AddWithValue($"@{property.Name}", "");//'1900-01-01 00:00:00.000' 으로 들어감.
-                        }
                     }
                     else
                     {
@@ -336,7 +331,14 @@ namespace Engine._01.DBMgr
                 }
 
                 // 쿼리 실행
-                command.ExecuteNonQuery();
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception _e)
+                {
+                    Debug.WriteLine(_e.Message);
+                }
             }
         }
 
@@ -383,7 +385,7 @@ namespace Engine._01.DBMgr
 
         #endregion
         #region UPDATE
-        public int UpdateData<T>(string connectionString, T data, string keyColumn)
+        public void UpdateData<T>(string connectionString, T data, string keyColumn)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -403,42 +405,35 @@ namespace Engine._01.DBMgr
                     }
                 }
 
-                // SQL 쿼리 작성
+                // 쿼리 작성
                 string query = $"UPDATE {typeof(T).Name} SET {string.Join(", ", updateColumns)} WHERE {keyColumn} = @{keyColumn}";
 
-                // SQL 명령 실행
+                // 파라미터 바인딩
                 SqlCommand command = new SqlCommand(query, connection);
-                //command.Parameters.AddRange(updateValues.Select(v => new SqlParameter($"@{v.GetType().Name}", v)).ToArray());
                 foreach (var property in properties)
                 {
                     if (property.PropertyType == typeof(DateTime))
                     {
                         DateTime dateTime = (DateTime)property.GetValue(data);
                         if (dateTime.Year > 1753)
-                        {
                             command.Parameters.AddWithValue($"@{property.Name}", dateTime);
-                        }
                         else
-                        {
                             command.Parameters.AddWithValue($"@{property.Name}", "");//'1900-01-01 00:00:00.000' 으로 들어감.
-                        }
                     }
                     else
                     {
                         command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(data));
                     }
                 }
-
-                int result = 0;
+                //쿼리실행
                 try
                 {
-                    result = command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
                 }
                 catch (Exception _e)
                 {
                     Debug.WriteLine(_e.Message);
                 }
-                return result;
             }
         }
         
@@ -495,7 +490,6 @@ namespace Engine._01.DBMgr
                         command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(data));
                     }
                 }
-                //command.Parameters.AddWithValue($"@{keyValuePair.Key}", keyValuePair.Value);
                 // 쿼리 실행
                 try
                 {
