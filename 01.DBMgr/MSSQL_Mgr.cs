@@ -1,4 +1,5 @@
 ﻿using Engine._05.CStackTracer;
+using Renci.SshNet.Security;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +9,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Engine._01.DBMgr
 {
@@ -380,6 +383,132 @@ namespace Engine._01.DBMgr
 
         #endregion
         #region UPDATE
+        public int UpdateData<T>(string connectionString, T data, string keyColumn)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // 업데이트할 컬럼 및 값 구성
+                var properties = typeof(T).GetProperties();
+                var updateColumns = new List<string>();
+                var updateValues = new List<object>();
+
+                foreach (var prop in properties)
+                {
+                    if (prop.Name != keyColumn)
+                    {
+                        updateColumns.Add($"{prop.Name} = @{prop.Name}");
+                        updateValues.Add(prop.GetValue(data));
+                    }
+                }
+
+                // SQL 쿼리 작성
+                string query = $"UPDATE {typeof(T).Name} SET {string.Join(", ", updateColumns)} WHERE {keyColumn} = @{keyColumn}";
+
+                // SQL 명령 실행
+                SqlCommand command = new SqlCommand(query, connection);
+                //command.Parameters.AddRange(updateValues.Select(v => new SqlParameter($"@{v.GetType().Name}", v)).ToArray());
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(DateTime))
+                    {
+                        DateTime dateTime = (DateTime)property.GetValue(data);
+                        if (dateTime.Year > 1753)
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", dateTime);
+                        }
+                        else
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", "");//'1900-01-01 00:00:00.000' 으로 들어감.
+                        }
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(data));
+                    }
+                }
+
+                int result = 0;
+                try
+                {
+                    result = command.ExecuteNonQuery();
+                }
+                catch (Exception _e)
+                {
+                    Debug.WriteLine(_e.Message);
+                }
+                return result;
+            }
+        }
+        
+
+        public void UpdateDataByPrimaryKey<T>(DB_CONNECTION _CON, T data, KeyValuePair<string, object> keyValuePair)
+        {
+            string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;
+            UpdateDataByPrimaryKey<T>(url, data, keyValuePair);
+        }
+        public void UpdateDataByPrimaryKey<T>(string _connectionUrl, T data, KeyValuePair<string, object> keyValuePair)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionUrl))
+            {
+                connection.Open();
+
+                // 제네릭 INSERT 메서드 호출
+                UpdateDataByPrimaryKey<T>(connection, data, keyValuePair);
+            }
+        }
+        public void UpdateDataByPrimaryKey<T>(SqlConnection connection, T data, KeyValuePair<string, object> keyValuePair)
+        {
+            // 데이터 모델 클래스의 속성 정보 가져오기
+            var properties = typeof(T).GetProperties();
+
+            // KEY 속성 찾기
+            var keyProperty = properties.FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)));
+            //string query = $"UPDATE {typeof(T).Name} SET ";
+            //// 업데이트 쿼리 생성
+            //foreach (System.Reflection.PropertyInfo prop in data.GetType().GetProperties())
+            //{
+            //        query += $"{prop.Name} = @{prop.Name}, ";
+            //}
+            string query = $"UPDATE {typeof(T).Name} SET {string.Join(", ", properties.Where(p => false == p.Name.Equals(keyValuePair.Key)).Select(p => p.Name + " = @" + p.Name))} ";
+            query += query.TrimEnd(',', ' ') + $" WHERE {keyValuePair.Key} = @{keyValuePair.Key}";
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                // 파라미터 바인딩
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(DateTime))
+                    {
+                        DateTime dateTime = (DateTime)property.GetValue(data);
+                        if (dateTime.Year > 1753)
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", dateTime);
+                        }
+                        else
+                        {
+                            command.Parameters.AddWithValue($"@{property.Name}", "");//'1900-01-01 00:00:00.000' 으로 들어감.
+                        }
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue($"@{property.Name}", property.GetValue(data));
+                    }
+                }
+                //command.Parameters.AddWithValue($"@{keyValuePair.Key}", keyValuePair.Value);
+                // 쿼리 실행
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception _e)
+                {
+                    Debug.WriteLine(_e.Message);
+                }
+            }
+        }
+
+
         public void UpdateDataByKey<T>(DB_CONNECTION _CON, object key, Dictionary<string, object> updatedValues)
         {
             string url = ConfigurationManager.ConnectionStrings[Enum.GetName(_CON)].ConnectionString;

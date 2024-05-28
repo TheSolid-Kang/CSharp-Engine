@@ -41,4 +41,32 @@ namespace Engine._10.CActiveDirectoryMgr
         public DateTime whenChanged { get; set; }
         public DateTime whenCreated { get; set; }
     }
+    public class ADUserComparer : IEqualityComparer<ADUser>
+    {
+        public bool Equals(ADUser x, ADUser y)
+        {
+            return x.cn == y.cn
+                    && x.description == y.description
+                    && x.department == y.department
+                    && x.displayName == y.displayName
+                    && x.distinguishedName == y.distinguishedName
+                    && x.givenName == y.givenName
+                    && x.homePhone == y.homePhone
+                    && x.otherHomePhone == y.otherHomePhone
+                    && x.otherMobile == y.otherMobile
+                    && x.sn == y.sn
+                    && x.title == y.title
+                    && x.mail == y.mail
+                    && x.manager == y.manager
+                    && x.sAMAccountName == y.sAMAccountName
+                    && x.userPrincipalName == y.userPrincipalName
+                    && x.uSNChanged == y.uSNChanged
+                    && x.uSNCreated == y.uSNCreated;
+        }
+
+        public int GetHashCode(ADUser obj)
+        {
+            return obj.uSNCreated.GetHashCode() ^ obj.uSNCreated.GetHashCode();
+        }
+    }
 }
