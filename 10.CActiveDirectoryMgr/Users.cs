@@ -32,6 +32,7 @@ namespace Engine._10.CActiveDirectoryMgr
         public string title { get; set; } = ""; //직급
         public string mail { get; set; } = "";
         public string manager { get; set; } = ""; //관리자
+        public string mobile { get; set; } = ""; //휴대폰
         [Key]
         public string sAMAccountName { get; set; } = "";
         //public string userGroup { get; set; } = "";
@@ -58,6 +59,7 @@ namespace Engine._10.CActiveDirectoryMgr
                     && x.title == y.title
                     && x.mail == y.mail
                     && x.manager == y.manager
+                    && x.mobile == y.mobile
                     && x.sAMAccountName == y.sAMAccountName
                     && x.userPrincipalName == y.userPrincipalName
                     && x.uSNChanged == y.uSNChanged
