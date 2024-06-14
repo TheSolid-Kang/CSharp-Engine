@@ -14,7 +14,7 @@ namespace Engine._05.CStackTracer
 
         public void WriteTraceInfo(string _note = "", int _depth = DEFAULT_FRAME_DEPTH)
         {
-            string path = System.IO.Directory.GetCurrentDirectory() + @"\Log.txt";
+            string path = System.IO.Directory.GetCurrentDirectory() + @"\Log.log";
             System.Text.StringBuilder str_buil = new System.Text.StringBuilder(DEFAULT_CAP);
             if (!System.IO.File.Exists(path))
                 System.IO.File.WriteAllText(path, "");
