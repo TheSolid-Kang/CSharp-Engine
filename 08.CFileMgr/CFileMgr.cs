@@ -1,6 +1,8 @@
-﻿using Engine._98.Headers;
+﻿using Engine._05.CStackTracer;
+using Engine._98.Headers;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -100,6 +102,54 @@ namespace Engine._08.CFileMgr
 
                 return encoding;
             }
+        }
+        #endregion
+
+        #region 데이터테이블 TO EXCEL
+        /// <summary>
+        /// 사용법: WriteDataTableToExcel(데이터테이블, Application.StartupPath + @"\데이터테이블.csv");
+        /// </summary>
+        /// <param name="_dt"></param>
+        /// <param name="_path"></param>
+        /// <param name="_separator"></param>
+        public void WriteDataTableToCsv(DataTable _dt, string _path, string _separator = ",")
+        {
+#if !DEBUG
+            return;
+#endif
+
+            if (_dt == null)
+                return;
+            string[] columnNames = _dt.Columns
+                .Cast<DataColumn>()
+                .Select(column => column.ColumnName)
+                .ToArray();
+
+            var lines = new List<string>();
+            lines.Add(string.Join(_separator, columnNames.Select(_name => $"\"{_name}\"")));
+
+            var valueLines = _dt.AsEnumerable().Select(_dr => {
+                var str = "";
+                if (_dr.RowState != DataRowState.Deleted)
+                    str = string.Join(_separator, _dr.ItemArray.Select(_obj => $"\"{_obj}\""));
+                return str;
+            });
+            lines.AddRange(valueLines);
+
+            try
+            {
+                File.WriteAllLines(_path, lines, System.Text.Encoding.Default);
+            }
+            catch (Exception _e)
+            {
+                CStackTracer.GetInstance().WriteTraceInfo(_e.Message);
+            }
+        }
+        public DataTable ReadCsvToDataTable()
+        {
+            DataTable dt = new DataTable();
+
+            return null;
         }
         #endregion
     }
