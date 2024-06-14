@@ -43,6 +43,16 @@ namespace Engine._10.CActiveDirectoryMgr
             return GetADUsers("LDAP://10.225.88.70", "administrator", "yonwoo*211013");
         }
 
+        public List<ADGroup> GetADGroups(string? _ldapUrl, string? _username, string? _password)
+        {
+            DirectoryEntry directoryEntry = new DirectoryEntry(_ldapUrl, _username, _password);
+            DirectorySearcher directorySearcher = new DirectorySearcher(directoryEntry)
+            {
+                SearchScope = SearchScope.Subtree,
+                Filter = $"(&(objectCategory=group)(objectClass=group))"
+            };
+            return GetADObjs<ADGroup>(directoryEntry, directorySearcher);
+        }
         /// <summary>
         /// AD 객체(User, Group)
         /// </summary>
