@@ -75,9 +75,9 @@ namespace Engine._10.CActiveDirectoryMgr
                 System.Console.WriteLine("## Get Search AD List Exception : " + ex.Message);
             }
 
-            SearchResultCollection resultCollection = _directorySearcher.FindAll();
-            list = new List<T>(resultCollection.Count);
-            foreach (SearchResult searchResult in resultCollection)
+            var iterable = SafeFindAll(_directorySearcher);
+            List<SearchResult> searchResults = iterable.ToList<SearchResult>();
+            foreach (SearchResult searchResult in searchResults)
             {
                 T obj = System.Activator.CreateInstance<T>();
                 foreach (System.Reflection.PropertyInfo prop in obj.GetType().GetProperties())
@@ -97,7 +97,16 @@ namespace Engine._10.CActiveDirectoryMgr
 
             return list;
         }
-
+        public IEnumerable<SearchResult> SafeFindAll(DirectorySearcher _directorySearcher)
+        {
+            using (SearchResultCollection searchResultCollection = _directorySearcher.FindAll())
+            {
+                foreach (SearchResult searchResult in searchResultCollection)
+                {
+                    yield return searchResult;
+                }
+            } // SearchResultCollection will be disposed here
+        }
 
         public DataTable GetDataTable<T>(string? _ldapUrl, string? _username, string? _password)
         {
