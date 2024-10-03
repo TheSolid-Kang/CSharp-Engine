@@ -131,4 +131,67 @@ namespace Engine._01.DBMgr
             return list;
         }
     }
+
+    public class SqlProcedureExecutor
+    {
+        private string _connectionString;
+
+        public SqlProcedureExecutor(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public void ExecuteProcedure(string procedureName, SqlParameter[] parameters)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(procedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // 파라미터 추가
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("프로시저가 성공적으로 실행되었습니다.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("프로시저 실행 중 오류 발생: " + ex.Message);
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+     class Program
+{
+    static void Main(string[] args)
+    {
+        string connectionString = "Server=your_server;Database=your_database;User Id=your_username;Password=your_password;"; // 연결 문자열을 입력하세요.
+        SqlProcedureExecutor executor = new SqlProcedureExecutor(connectionString);
+
+        string procedureName = "YourStoredProcedure"; // 실행할 프로시저 이름
+        SqlParameter[] parameters = new SqlParameter[]
+        {
+            new SqlParameter("@Parameter1", SqlDbType.Int) { Value = 10 },
+            new SqlParameter("@Parameter2", SqlDbType.VarChar) { Value = "Sample" }
+        };
+
+        executor.ExecuteProcedure(procedureName, parameters);
+    }
+}
+
+    SqlProcedureExecutor 클래스: 이 클래스는 SQL Server에 연결하고 프로시저를 실행하는 기능을 제공합니다.
+ExecuteProcedure 메서드: 주어진 프로시저 이름과 파라미터 배열을 사용하여 프로시저를 실행합니다.
+사용 예제: 연결 문자열, 프로시저 이름, 및 파라미터를 설정하고 ExecuteProcedure 메서드를 호출하여 프로시저를 실행합니다.
+이 코드를 사용하여 SQL 프로시저를 쉽게 호출할 수 있습니다. 필요에 따라 예외 처리를 추가하거나, 반환 값을 처리하는 기능을 추가할 수 있습니다.
+     */
 }
