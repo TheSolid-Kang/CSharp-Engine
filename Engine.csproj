@@ -6,6 +6,8 @@
 		<Nullable>enable</Nullable>
 		<BaseOutputPath></BaseOutputPath>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Platform>x64</Platform>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
 	<ItemGroup>
