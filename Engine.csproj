@@ -9,6 +9,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="EngineTest\**" />
+	  <EmbeddedResource Remove="EngineTest\**" />
+	  <None Remove="EngineTest\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="MySqlBackup.NET" Version="2.3.7" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Npgsql" Version="8.0.3" />
